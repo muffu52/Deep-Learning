@@ -1,0 +1,5 @@
+.venv
+data
+results
+.vscode
+__pycache__
