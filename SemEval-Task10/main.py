@@ -10,7 +10,7 @@ def start(task):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
     torch.cuda.empty_cache()
-    process_data(label_idx[task], f'label_{task}', "data/train_all_tasks.csv")
+    process_data(label_idx[task], f'label_{task}', "data/sexist_data.csv")
     # Change the model to bert-large-uncased or any other sequence classifier
     # distilbert-base-uncased
     best_model_checkpoint = train(
