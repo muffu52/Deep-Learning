@@ -4,14 +4,16 @@ import evaluate
 import numpy as np
 from datasets import load_dataset
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
-                          DataCollatorWithPadding, Trainer, TrainingArguments, RobertaTokenizer, RobertaForMultipleChoice)
+                          DataCollatorWithPadding, Trainer, TrainingArguments, RobertaTokenizer, RobertaModel)
+
+
 
 
 def train(model_name: str, feature_name: str, idx_label: Dict[int, str], label_idx: Dict[str, int], output_dir: str = "results"):
     df = load_dataset("json", data_files={
         "train": f'preprocessed/{feature_name}_train.json', "validation": f'preprocessed/{feature_name}_valid.json'})
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    # tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
+    # tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 
     def preprocess_function(examples):
         return tokenizer(examples["text"], truncation=True)
@@ -25,9 +27,16 @@ def train(model_name: str, feature_name: str, idx_label: Dict[int, str], label_i
         predictions, labels = eval_pred
         predictions = np.argmax(predictions, axis=1)
         return f1.compute(predictions=predictions, references=labels, average="macro")
+    
+    label_num = 2
+
+    if feature_name == "label_category":
+        label_num = 4
+    elif feature_name == "label_vector":
+        label_num = 11
 
     model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2, id2label=idx_label, label2id=label_idx
+        model_name, num_labels=label_num, id2label=idx_label, label2id=label_idx
     )
 
     # model = RobertaForMultipleChoice.from_pretrained("roberta-base")

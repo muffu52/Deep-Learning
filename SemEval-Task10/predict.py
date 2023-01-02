@@ -14,25 +14,21 @@ def predict(model_path: str, dev_csv_file_path: str, output_csv_file_name: str, 
 
     task_result = pd.DataFrame()
 
-    with torch.no_grad():
-        text = "Dogs are beneficial"
-        inputs = tokenizer(text, return_tensors="pt")
-        outputs = model(**inputs)
-        predicted_class_id = np.argmax(outputs.logits.numpy()[0])
-        print(model.config.id2label[predicted_class_id])
-
-    # for index in tqdm(range(len(dev_task_a))):
-    #     row = dev_task_a.iloc[index]
-    #     # print(row)
-    #     with torch.no_grad():
-    #         text = row["text\r"]
+    for index in tqdm(range(len(dev_task_a))):
+        row = dev_task_a.iloc[index]
+        # print(row)
+        with torch.no_grad():
+            text = row["text\r"]
             
-    #         inputs = tokenizer(text, return_tensors="pt")
-    #         outputs = model(**inputs)
-    #         predicted_class_id = np.argmax(outputs.logits.numpy()[0])
-    #         print(model.config.id2label[predicted_class_id])
-    #         task_result = task_result.append(
-    #             {"rewire_id": row["rewire_id"], "label_pred": model.config.id2label[predicted_class_id]}, ignore_index=True)
+            inputs = tokenizer(text, return_tensors="pt")
+            outputs = model(**inputs)
+            predicted_class_id = np.argmax(outputs.logits.numpy()[0])
+            # print(model.config.id2label[predicted_class_id])
+            task_result = task_result.append(
+                {"rewire_id": row["rewire_id"], "label_pred": model.config.id2label[predicted_class_id]}, ignore_index=True)
 
-    # task_result.to_csv(f'{output_dir}/{output_csv_file_name}.zip', index=False, compression={
-    #     "method": 'zip', 'archive_name': f'{output_csv_file_name}.csv'})
+    task_result.to_csv(f'{output_dir}/{output_csv_file_name}.zip', index=False, compression={
+        "method": 'zip', 'archive_name': f'{output_csv_file_name}.csv'})
+
+
+

@@ -10,9 +10,11 @@ def generate_df(input_file_path: str, feature_name: str, train_split: int = 0.8)
     df = pd.read_csv(input_file_path,
                      delimiter=",", encoding='utf-8', lineterminator='\n')
 
+    if feature_name != "label_sexist":
+        df = df[df['label_sexist'] == 'sexist']
+
     features = df.drop(columns=[feature_name]).copy()
     labels = df[feature_name]
-    print(labels)
 
     features_train, features_valid, labels_train, labels_valid = train_test_split(
         features, labels, train_size=train_split, stratify=labels)
